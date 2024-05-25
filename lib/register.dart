@@ -1,3 +1,4 @@
+import 'package:be_dining/register_info_input.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -324,7 +325,7 @@ class RegisterPage extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  // Perform login operation here
+                  Navigator.of(context).push(_createRoute());
                 },
                 child: const Text(
                     '가입 완료',
@@ -339,5 +340,19 @@ class RegisterPage extends StatelessWidget {
         )
       ),
     );
+  }
+
+  Route _createRoute() {
+    return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => RegInfoWidget(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+          var tween =
+          Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          return SlideTransition(
+              position: animation.drive(tween), child: child);
+        });
   }
 }

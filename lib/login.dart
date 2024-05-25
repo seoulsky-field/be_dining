@@ -1,3 +1,5 @@
+import 'package:be_dining/register.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,7 +15,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,24 +104,24 @@ class LoginPage extends StatelessWidget {
                 height: 50,
                 child: RichText(
                   textAlign: TextAlign.right,
-                  text: const TextSpan(
+                  text: TextSpan(
                     text: '아직 회원이 아니신가요?   ',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: Colors.grey
                     ),
                     children: <TextSpan>[
                       TextSpan(
                         text: '회원가입',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Color(0xffbf2142),
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,
                         ),
-                        // recognizer: TapGestureRecognizer()..onTap = () {
-                        //   // onTap Event
-                        // },
+                        recognizer: TapGestureRecognizer()..onTap = () {
+                          Navigator.of(context).push(_createRoute());
+                        },
                       ),
                     ],
                   ),
@@ -123,5 +132,19 @@ class LoginPage extends StatelessWidget {
         ),
       )
     );
+  }
+
+  Route _createRoute() {
+    return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => RegisterPage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+          var tween =
+          Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          return SlideTransition(
+              position: animation.drive(tween), child: child);
+        });
   }
 }
