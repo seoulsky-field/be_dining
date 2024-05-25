@@ -17,9 +17,7 @@ class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register Page'),
-      ),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: SingleChildScrollView(
@@ -113,7 +111,6 @@ class RegisterPage extends StatelessWidget {
                   obscureText: true,
                   textAlignVertical: TextAlignVertical.top,
                   decoration: InputDecoration(
-                    // labelText: '비밀번호를 입력해주세요.',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7)
                     ),
@@ -163,18 +160,43 @@ class RegisterPage extends StatelessWidget {
                   )
               ),
               SizedBox(height: 5),
-              SizedBox(
-                height: 45,
-                child: TextField(
-                  obscureText: true,
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(7)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 45,
+                      child: TextField(
+                        obscureText: false,
+                        textAlignVertical: TextAlignVertical.top,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(7)
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),SizedBox(height: 10),
+                  const Text(" @ "),
+                  Expanded(
+                    child: SizedBox(
+                      height: 45,
+                      child: TextField(
+                        obscureText: false,
+                        controller: TextEditingController(text: "dankook.ac.kr"),
+                        textAlignVertical: TextAlignVertical.top,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(7)
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -204,7 +226,7 @@ class RegisterPage extends StatelessWidget {
                   child: RichText(
                     textAlign: TextAlign.left,
                     text: const TextSpan(
-                      text: '이메일 전송된 인증 코드를 입력해주세요.',
+                      text: '이메일로 전송된 인증 코드를 입력해주세요.',
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.black,
@@ -261,12 +283,20 @@ class RegisterPage extends StatelessWidget {
                 child: RichText(
                   textAlign: TextAlign.left,
                   text: const TextSpan(
-                    text: '이메일을 받지 못하셨나요?  ',
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey
-                    ),
-                    children: <TextSpan>[
+                    children: [
+                      WidgetSpan(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                          child: Icon(Icons.info_outline, size: 15, color: Colors.grey),
+                        ),
+                      ),
+                      TextSpan(
+                        text: '이메일을 받지 못하셨나요?  ',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey
+                        ),
+                      ),
                       TextSpan(
                         text: '이메일 재전송하기',
                         style: TextStyle(
@@ -297,7 +327,7 @@ class RegisterPage extends StatelessWidget {
                   // Perform login operation here
                 },
                 child: const Text(
-                    '로그인',
+                    '가입 완료',
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold
