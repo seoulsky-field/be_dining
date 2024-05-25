@@ -58,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 50,
                 child: TextField(
                   decoration: InputDecoration(
-                    labelText: '닉네임을 입력해주세요.',
+                    labelText: '이메일을 입력해주세요.',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(7)
                     ),
