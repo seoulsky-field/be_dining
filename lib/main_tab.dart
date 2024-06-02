@@ -9,19 +9,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: MyStatefulWidget(),
+      home: MainTabWidget(),
     );
   }
 }
 
-class MyStatefulWidget extends StatefulWidget {
-  const MyStatefulWidget({Key? key}) : super(key: key);
+class MainTabWidget extends StatefulWidget {
+  const MainTabWidget({Key? key}) : super(key: key);
 
   @override
-  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
+  State<MainTabWidget> createState() => MainTabWidgetState();
 }
 
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+class MainTabWidgetState extends State<MainTabWidget> {
 // 탭을 이동할 때 쓸 변수!
   int _selectedIndex = 0;
 
@@ -50,6 +50,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0), // 앱바의 높이를 설정
         child: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
           flexibleSpace: Center(
             child: Image.asset(
