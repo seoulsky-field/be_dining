@@ -1,33 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+
+import 'main_tab.dart';
 
 enum Gender {man, woman}
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: [
-        Locale('ko', ''), // Korean
-        Locale('en', ''), // English
-      ],
-      home: RegInfoWidget(),
-    );
-  }
-}
-
 class RegInfoWidget extends StatefulWidget {
-  const RegInfoWidget({Key? key}) : super(key: key);
+  final String nickname;
+  const RegInfoWidget({super.key, required this.nickname});
 
   @override
   State<RegInfoWidget> createState() => _RegInfoWidgetState();
@@ -35,6 +16,13 @@ class RegInfoWidget extends StatefulWidget {
 
 class _RegInfoWidgetState extends State<RegInfoWidget> {
   Gender? _gender = Gender.man;
+  late String _nickname;
+
+  @override
+  void initState() {
+    super.initState();
+    _nickname = widget.nickname;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,12 +43,12 @@ class _RegInfoWidgetState extends State<RegInfoWidget> {
                   fit: BoxFit.contain
               ),
               const SizedBox(height: 20),
-              const SizedBox(
+              SizedBox(
                 height: 30,
                 child: Text(
                     textAlign: TextAlign.center,
-                    "~~~님, 반갑습니다!",
-                    style: TextStyle(
+                    "$_nickname님, 반갑습니다!",
+                    style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold
                     )
@@ -279,7 +267,7 @@ class _RegInfoWidgetState extends State<RegInfoWidget> {
                   ),
                 ),
                 onPressed: () {
-                  // Perform login operation here
+                  Navigator.of(context).push(_createRoute());
                 },
                 child: const Text(
                     '입력 완료',
@@ -296,5 +284,19 @@ class _RegInfoWidgetState extends State<RegInfoWidget> {
         ),
       )
     );
+  }
+
+  Route _createRoute() {
+    return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => MainTabWidget(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+          var tween =
+          Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          return SlideTransition(
+              position: animation.drive(tween), child: child);
+        });
   }
 }

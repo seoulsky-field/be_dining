@@ -22,6 +22,10 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  String _nickname = "";
+  String _password = "";
+  String _email = "";
+
   final TextEditingController nicknameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordCheckingController = TextEditingController();
@@ -51,35 +55,9 @@ class _RegisterPageState extends State<RegisterPage> {
           _nicknameCheckMessage = '사용 가능한 닉네임입니다.';
           _nicknameCheckColor = Colors.blue;
           _nicknameCheckAlert = true;
+          _nickname = nickname;
         });
       }
-  }
-
-  String _emailCheckMessage = "";
-  Color _emailCheckColor = Colors.red;
-  bool _emailCheckAlert = false;
-
-  Future<void> _checkEmail() async {
-    final email = emailController.text;
-    if (email.isEmpty) {
-      setState(() {
-        _emailCheckMessage = '이메일을 입력해주세요.';
-        _emailCheckColor = Colors.red;
-        _emailCheckAlert = true;
-      });
-    }else if (email == "admin") {
-      setState(() {
-        _emailCheckMessage = '이미 등록된 이메일입니다.';
-        _emailCheckColor = Colors.red;
-        _emailCheckAlert = true;
-      });
-    }else {
-      setState(() {
-        _emailCheckMessage = '인증 번호가 전송되었습니다.';
-        _emailCheckColor = Colors.blue;
-        _emailCheckAlert = true;
-      });
-    }
   }
 
   String _passwordCheckMessage = "";
@@ -105,6 +83,35 @@ class _RegisterPageState extends State<RegisterPage> {
         _passwordCheckMessage = '비밀번호가 확인되었습니다.';
         _passwordCheckColor = Colors.blue;
         _passwordCheckAlert = true;
+        _password = password;
+      });
+    }
+  }
+
+  String _emailCheckMessage = "";
+  Color _emailCheckColor = Colors.red;
+  bool _emailCheckAlert = false;
+
+  Future<void> _checkEmail() async {
+    final email = emailController.text;
+    if (email.isEmpty) {
+      setState(() {
+        _emailCheckMessage = '이메일을 입력해주세요.';
+        _emailCheckColor = Colors.red;
+        _emailCheckAlert = true;
+      });
+    }else if (email == "admin") {
+      setState(() {
+        _emailCheckMessage = '이미 등록된 이메일입니다.';
+        _emailCheckColor = Colors.red;
+        _emailCheckAlert = true;
+      });
+    }else {
+      setState(() {
+        _emailCheckMessage = '인증 번호가 전송되었습니다.';
+        _emailCheckColor = Colors.blue;
+        _emailCheckAlert = true;
+        _email = email;
       });
     }
   }
@@ -550,7 +557,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             _emailDoubleCheckMessage != '인증되었습니다.') {
                           null;
                         }else {
-                          Navigator.of(context).push(_createRoute());
+                          Navigator.of(context).push(_createRoute(_nickname));
                         }
                       },
                       child: const Text(
@@ -571,9 +578,9 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Route _createRoute() {
+  Route _createRoute(String nickname) {
     return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => RegInfoWidget(),
+        pageBuilder: (context, animation, secondaryAnimation) => RegInfoWidget(nickname: _nickname),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0);
           const end = Offset.zero;
