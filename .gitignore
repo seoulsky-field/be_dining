@@ -49,3 +49,5 @@ app.*.map.json
 !lib/**
 !.gitignore
 !pubspec.yaml
+!android
+!android/**
