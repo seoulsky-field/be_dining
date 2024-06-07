@@ -1,15 +1,28 @@
 import 'package:be_dining/roulette.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MyApp());
+import 'login.dart';
+import 'logout.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MainTab extends StatelessWidget {
+  const MainTab({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MainTabWidget(),
+    return Scaffold(
+      body: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              print(snapshot);
+              return MainTabWidget();
+            } else {
+              return LoginPage();
+            }
+          }
+      ),
+      // home: MainTabWidget(),
     );
   }
 }
@@ -22,7 +35,8 @@ class MainTabWidget extends StatefulWidget {
 }
 
 class MainTabWidgetState extends State<MainTabWidget> {
-// 탭을 이동할 때 쓸 변수!
+  final _user = FirebaseAuth.instance.currentUser;
+  // 탭을 이동할 때 쓸 변수!
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
@@ -33,9 +47,7 @@ class MainTabWidgetState extends State<MainTabWidget> {
       '혼밥 최고 구현',
     ),
     RecRoulette(),
-    Text(
-      '마이페이지 구현',
-    ),
+    MyPage()
   ];
 
   void _onItemTapped(int index) {

@@ -1,26 +1,8 @@
+import 'package:be_dining/main_tab.dart';
 import 'package:be_dining/register.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
-import 'firebase_options.dart';
-
-Future<void> main() async{
-  runApp(MyApp());
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: LoginPage(),
-    );
-  }
-}
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -30,6 +12,23 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _emailController  = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  Future signIn() async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim()
+    );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,8 +46,7 @@ class _LoginPageState extends State<LoginPage> {
                   width: 100,
                   height: 100,
                   fit: BoxFit.contain
-              ),
-              SizedBox(height: 20),
+              ), const SizedBox(height: 20),
               const SizedBox(
                 height: 50,
                 child: Text(
@@ -59,11 +57,11 @@ class _LoginPageState extends State<LoginPage> {
                     fontWeight: FontWeight.bold
                   )
                 ),
-              ),
-              SizedBox(height: 20),
+              ), const SizedBox(height: 20),
               SizedBox(
                 height: 50,
                 child: TextField(
+                  controller: _emailController,
                   decoration: InputDecoration(
                     labelText: '이메일을 입력해주세요.',
                     border: OutlineInputBorder(
@@ -71,12 +69,12 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 20),
+              ), const SizedBox(height: 20),
               SizedBox(
                 height: 50,
                 child: TextField(
                   obscureText: true,
+                  controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: '비밀번호를 입력해주세요.',
                     border: OutlineInputBorder(
@@ -84,20 +82,17 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 20),
+              ), const SizedBox(height: 20),
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xffbf2142),
-                    surfaceTintColor: Color(0xffbf2142),
+                    backgroundColor: const Color(0xffbf2142),
+                    surfaceTintColor: const Color(0xffbf2142),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(7),
                     ),
                   ),
-                onPressed: () {
-                  // Perform login operation here
-                },
+                onPressed: signIn,
                 child: const Text(
                     '로그인',
                     style: TextStyle(
@@ -105,8 +100,7 @@ class _LoginPageState extends State<LoginPage> {
                         fontWeight: FontWeight.bold
                     )
                 ),
-              ),
-              SizedBox(height: 10),
+              ), const SizedBox(height: 10),
               SizedBox(
                 height: 50,
                 child: RichText(
@@ -148,8 +142,7 @@ class _LoginPageState extends State<LoginPage> {
           const begin = Offset(1.0, 0.0);
           const end = Offset.zero;
           const curve = Curves.easeInOut;
-          var tween =
-          Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
           return SlideTransition(
               position: animation.drive(tween), child: child);
         });
