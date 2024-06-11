@@ -1,6 +1,12 @@
+import 'dart:math';
+
 import 'package:be_dining/register_info_input.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 
 void main() {
   runApp(MyApp());
@@ -32,6 +38,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String _nicknameCheckMessage = "";
   Color _nicknameCheckColor = Colors.red;
   bool _nicknameCheckAlert = false;
+  late int verificationNumber;
 
   Future<bool> _checkNickname() async {
     final nickname = nicknameController.text;
@@ -113,7 +120,7 @@ class _RegisterPageState extends State<RegisterPage> {
           .collection('double_check').doc('email').get();
       final data = emailList.data() as Map<String, dynamic>;
 
-      if (data.containsKey(email + "@dankook.ac.kr")) {
+      if (data.containsKey("$email@dankook.ac.kr")) {
         setState(() {
           _emailCheckMessage = '이미 등록된 이메일입니다.';
           _emailCheckColor = Colors.red;
@@ -126,9 +133,26 @@ class _RegisterPageState extends State<RegisterPage> {
           _emailCheckColor = Colors.blue;
           _emailCheckAlert = true;
         });
+        sendMail();
         return true;
       }
     }
+  }
+
+  Future<void> sendMail() async {
+    verificationNumber = 100000 + Random().nextInt(899999);
+    SmtpServer smtpServer = gmail('email_address', '16codes');
+    Message message = Message()
+      ..from = const Address('email_address', 'Be_Dining')
+      ..recipients.add("${emailController.text.trim()}@dankook.ac.kr")
+      ..subject = 'Email Verification Code'
+      ..text = "The email verification number is $verificationNumber.";
+
+    await send(message, smtpServer);
+
+    var connection = PersistentConnection(smtpServer);
+    await connection.send(message);
+    await connection.close();
   }
 
   String _emailDoubleCheckMessage = "";
@@ -136,7 +160,8 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _emailDoubleCheckAlert = false;
 
   bool _doubleCheckEmail() {
-    final emailNumber = emailCheckingController.text;
+    final emailNumber = emailCheckingController.text.trim();
+    print(emailNumber);
     if (emailNumber.isEmpty) {
       setState(() {
         _emailDoubleCheckMessage = '인증 번호를 입력해주세요.';
@@ -144,7 +169,7 @@ class _RegisterPageState extends State<RegisterPage> {
         _emailDoubleCheckAlert = true;
       });
       return false;
-    }else if (emailNumber == "123456") {
+    }else if (int.parse(emailNumber) != verificationNumber) {
       setState(() {
         _emailDoubleCheckMessage = '전송된 인증 번호와 다릅니다.';
         _emailDoubleCheckColor = Colors.red;
@@ -473,6 +498,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: TextField(
                         controller: emailCheckingController,
                         textAlignVertical: TextAlignVertical.top,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(6),
+                        ],
                         decoration: InputDecoration(
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(7)
@@ -536,15 +566,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       height: 30,
                       child: RichText(
                         textAlign: TextAlign.left,
-                        text: const TextSpan(
+                        text: TextSpan(
                           children: [
-                            WidgetSpan(
+                            const WidgetSpan(
                               child: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 2.0),
                                 child: Icon(Icons.info_outline, size: 15, color: Colors.grey),
                               ),
                             ),
-                            TextSpan(
+                            const TextSpan(
                               text: '인증 번호를 받지 못하셨나요?  ',
                               style: TextStyle(
                                   fontSize: 12,
@@ -553,15 +583,15 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                             TextSpan(
                               text: '이메일 재전송하기',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.blueGrey,
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
                               ),
-                              // recognizer: TapGestureRecognizer()..onTap = () {
-                              //   // onTap Event
-                              // },
+                              recognizer: TapGestureRecognizer()..onTap = () {
+                                sendMail();
+                              },
                             ),
                           ],
                         ),
@@ -580,7 +610,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         if (await _checkNickname() &&
                             _checkPassword(passwordCheckingController.text.trim()) &&
                             await _checkEmail() &&
-                            _doubleCheckEmail()) {
+                            _emailDoubleCheckMessage == '인증되었습니다.') {
 
                           Navigator.of(context).push(
                               _createRoute(
