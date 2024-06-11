@@ -18,7 +18,7 @@ class _MyPageState extends State<MyPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Singed account: ${_user.email!}'),
+            Text('로그인 계정: ${_user.email!}'),
             MaterialButton(onPressed: () {
               FirebaseAuth.instance.signOut();
             },

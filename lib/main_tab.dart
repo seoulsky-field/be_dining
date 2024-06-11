@@ -15,7 +15,6 @@ class MainTab extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              print(snapshot);
               return MainTabWidget();
             } else {
               return LoginPage();
