@@ -1,4 +1,5 @@
 import 'package:be_dining/register_info_input.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -32,7 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Color _nicknameCheckColor = Colors.red;
   bool _nicknameCheckAlert = false;
 
-  bool _checkNickname() {
+  Future<bool> _checkNickname() async {
     final nickname = nicknameController.text;
       if (nickname.isEmpty) {
         setState(() {
@@ -41,20 +42,26 @@ class _RegisterPageState extends State<RegisterPage> {
           _nicknameCheckAlert = true;
         });
         return false;
-      }else if (nickname == "admin") {
-        setState(() {
-          _nicknameCheckMessage = '이미 존재하는 닉네임입니다.';
-          _nicknameCheckColor = Colors.red;
-          _nicknameCheckAlert = true;
-        });
-        return false;
       }else {
-        setState(() {
-          _nicknameCheckMessage = '사용 가능한 닉네임입니다.';
-          _nicknameCheckColor = Colors.blue;
-          _nicknameCheckAlert = true;
-        });
-        return true;
+        final nicknameList = await FirebaseFirestore.instance
+            .collection('double_check').doc('nickname').get();
+        final data = nicknameList.data() as Map<String, dynamic>;
+        
+        if (data.containsKey(nickname)) {
+          setState(() {
+            _nicknameCheckMessage = '이미 존재하는 닉네임입니다.';
+            _nicknameCheckColor = Colors.red;
+            _nicknameCheckAlert = true;
+          });
+          return false;
+        }else {
+          setState(() {
+            _nicknameCheckMessage = '사용 가능한 닉네임입니다.';
+            _nicknameCheckColor = Colors.blue;
+            _nicknameCheckAlert = true;
+          });
+          return true;
+        }
       }
   }
 
@@ -563,8 +570,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           borderRadius: BorderRadius.circular(7),
                         ),
                       ),
-                      onPressed: () {
-                        if (_checkNickname() &&
+                      onPressed: () async {
+                        if (await _checkNickname() &&
                             _checkPassword(passwordCheckingController.text.trim()) &&
                             _checkEmail() &&
                             _doubleCheckEmail()) {

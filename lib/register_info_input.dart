@@ -121,6 +121,11 @@ class _RegInfoWidgetState extends State<RegInfoWidget> {
         .collection('users')
         .doc(_email)
         .set(config);
+
+    FirebaseFirestore.instance
+        .collection('double_check')
+        .doc('nickname')
+        .set({_nickname: true}, SetOptions(merge: true) );
   }
 
   @override
