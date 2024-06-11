@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'login.dart';
 import 'main_tab.dart';
 
 enum Gender {man, woman}
@@ -89,9 +90,16 @@ class _RegInfoWidgetState extends State<RegInfoWidget> {
   }
 
   Future _createAccount() async {
+    print("==============ENTER THIS LOOP");
     print(_email);
     print(_password);
+
     await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: _email,
+      password: _password,
+    );
+
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: _email,
       password: _password,
     );
@@ -99,15 +107,20 @@ class _RegInfoWidgetState extends State<RegInfoWidget> {
     _addUserDetails();
   }
 
-  Future _addUserDetails() async {
-    await FirebaseFirestore.instance.collection('users').add({
+  void _addUserDetails() {
+    final config = {
       'nickname': _nickname,
-      'student_number': int.parse(studentNumberController.text.trim()),
+      'student_number': studentNumberController.text.trim(),
       'colleges': collegesController.text.trim(),
       'department': departmentController.text.trim(),
       'sex': _genderString,
       'birth': _birth
-    });
+    };
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(_email)
+        .set(config);
   }
 
   @override
@@ -438,7 +451,7 @@ class _RegInfoWidgetState extends State<RegInfoWidget> {
 
   Route _createRoute() {
     return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => MainTabWidget(),
+        pageBuilder: (context, animation, secondaryAnimation) => MainTab(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0);
           const end = Offset.zero;
