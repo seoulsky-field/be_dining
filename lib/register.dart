@@ -161,7 +161,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool _doubleCheckEmail() {
     final emailNumber = emailCheckingController.text.trim();
-    print(emailNumber);
     if (emailNumber.isEmpty) {
       setState(() {
         _emailDoubleCheckMessage = '인증 번호를 입력해주세요.';
@@ -609,7 +608,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       onPressed: () async {
                         if (await _checkNickname() &&
                             _checkPassword(passwordCheckingController.text.trim()) &&
-                            await _checkEmail() &&
+                            _emailCheckMessage == '인증 번호가 전송되었습니다.' &&
                             _emailDoubleCheckMessage == '인증되었습니다.') {
 
                           Navigator.of(context).push(
