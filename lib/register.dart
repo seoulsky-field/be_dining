@@ -99,7 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Color _emailCheckColor = Colors.red;
   bool _emailCheckAlert = false;
 
-  bool _checkEmail() {
+  Future<bool> _checkEmail() async {
     final email = emailController.text;
     if (email.isEmpty) {
       setState(() {
@@ -108,20 +108,26 @@ class _RegisterPageState extends State<RegisterPage> {
         _emailCheckAlert = true;
       });
       return false;
-    }else if (email == "admin") {
-      setState(() {
-        _emailCheckMessage = '이미 등록된 이메일입니다.';
-        _emailCheckColor = Colors.red;
-        _emailCheckAlert = true;
-      });
-      return false;
     }else {
-      setState(() {
-        _emailCheckMessage = '인증 번호가 전송되었습니다.';
-        _emailCheckColor = Colors.blue;
-        _emailCheckAlert = true;
-      });
-      return true;
+      final emailList = await FirebaseFirestore.instance
+          .collection('double_check').doc('email').get();
+      final data = emailList.data() as Map<String, dynamic>;
+
+      if (data.containsKey(email + "@dankook.ac.kr")) {
+        setState(() {
+          _emailCheckMessage = '이미 등록된 이메일입니다.';
+          _emailCheckColor = Colors.red;
+          _emailCheckAlert = true;
+        });
+        return false;
+      }else {
+        setState(() {
+          _emailCheckMessage = '인증 번호가 전송되었습니다.';
+          _emailCheckColor = Colors.blue;
+          _emailCheckAlert = true;
+        });
+        return true;
+      }
     }
   }
 
@@ -573,7 +579,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       onPressed: () async {
                         if (await _checkNickname() &&
                             _checkPassword(passwordCheckingController.text.trim()) &&
-                            _checkEmail() &&
+                            await _checkEmail() &&
                             _doubleCheckEmail()) {
 
                           Navigator.of(context).push(
