@@ -22,10 +22,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  String _nickname = "";
-  String _password = "";
-  String _email = "";
-
   final TextEditingController nicknameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordCheckingController = TextEditingController();
@@ -36,7 +32,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Color _nicknameCheckColor = Colors.red;
   bool _nicknameCheckAlert = false;
 
-  Future<void> _checkNickname() async {
+  bool _checkNickname() {
     final nickname = nicknameController.text;
       if (nickname.isEmpty) {
         setState(() {
@@ -44,19 +40,21 @@ class _RegisterPageState extends State<RegisterPage> {
           _nicknameCheckColor = Colors.red;
           _nicknameCheckAlert = true;
         });
+        return false;
       }else if (nickname == "admin") {
         setState(() {
           _nicknameCheckMessage = '이미 존재하는 닉네임입니다.';
           _nicknameCheckColor = Colors.red;
           _nicknameCheckAlert = true;
         });
+        return false;
       }else {
         setState(() {
           _nicknameCheckMessage = '사용 가능한 닉네임입니다.';
           _nicknameCheckColor = Colors.blue;
           _nicknameCheckAlert = true;
-          _nickname = nickname;
         });
+        return true;
       }
   }
 
@@ -64,7 +62,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Color _passwordCheckColor = Colors.red;
   bool _passwordCheckAlert = false;
 
-  Future<void> _checkPassword(String text) async {
+  bool _checkPassword(String text) {
     final password = passwordController.text;
     if (password.isEmpty || text.isEmpty) {
       setState(() {
@@ -72,19 +70,21 @@ class _RegisterPageState extends State<RegisterPage> {
         _passwordCheckColor = Colors.red;
         _passwordCheckAlert = true;
       });
+      return false;
     }else if (password != text) {
       setState(() {
         _passwordCheckMessage = '입력된 비밀번호가 동일하지 않습니다.';
         _passwordCheckColor = Colors.red;
         _passwordCheckAlert = true;
       });
+      return false;
     }else {
       setState(() {
         _passwordCheckMessage = '비밀번호가 확인되었습니다.';
         _passwordCheckColor = Colors.blue;
         _passwordCheckAlert = true;
-        _password = password;
       });
+      return true;
     }
   }
 
@@ -92,7 +92,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Color _emailCheckColor = Colors.red;
   bool _emailCheckAlert = false;
 
-  Future<void> _checkEmail() async {
+  bool _checkEmail() {
     final email = emailController.text;
     if (email.isEmpty) {
       setState(() {
@@ -100,19 +100,21 @@ class _RegisterPageState extends State<RegisterPage> {
         _emailCheckColor = Colors.red;
         _emailCheckAlert = true;
       });
+      return false;
     }else if (email == "admin") {
       setState(() {
         _emailCheckMessage = '이미 등록된 이메일입니다.';
         _emailCheckColor = Colors.red;
         _emailCheckAlert = true;
       });
+      return false;
     }else {
       setState(() {
         _emailCheckMessage = '인증 번호가 전송되었습니다.';
         _emailCheckColor = Colors.blue;
         _emailCheckAlert = true;
-        _email = email;
       });
+      return true;
     }
   }
 
@@ -120,7 +122,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Color _emailDoubleCheckColor = Colors.red;
   bool _emailDoubleCheckAlert = false;
 
-  Future<void> _doubleCheckEmail() async {
+  bool _doubleCheckEmail() {
     final emailNumber = emailCheckingController.text;
     if (emailNumber.isEmpty) {
       setState(() {
@@ -128,19 +130,32 @@ class _RegisterPageState extends State<RegisterPage> {
         _emailDoubleCheckColor = Colors.red;
         _emailDoubleCheckAlert = true;
       });
+      return false;
     }else if (emailNumber == "123456") {
       setState(() {
         _emailDoubleCheckMessage = '전송된 인증 번호와 다릅니다.';
         _emailDoubleCheckColor = Colors.red;
         _emailDoubleCheckAlert = true;
       });
+      return false;
     }else {
       setState(() {
         _emailDoubleCheckMessage = '인증되었습니다.';
         _emailDoubleCheckColor = Colors.blue;
         _emailDoubleCheckAlert = true;
       });
+      return true;
     }
+  }
+
+  @override
+  void dispose() {
+    nicknameController.dispose();
+    passwordController.dispose();
+    passwordCheckingController.dispose();
+    emailController.dispose();
+    emailCheckingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -264,6 +279,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         borderRadius: BorderRadius.circular(7)
                     ),
                   ),
+                  onChanged: (text) => { _checkPassword(passwordCheckingController.text.trim()) },
                 ),
               ),const SizedBox(height: 10),
               SizedBox(
@@ -359,6 +375,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       height: 45,
                       child: TextField(
                         obscureText: false,
+                        enabled: false,
                         controller: TextEditingController(text: "dankook.ac.kr"),
                         textAlignVertical: TextAlignVertical.top,
                         decoration: InputDecoration(
@@ -437,8 +454,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           ),
                         )
-                    ),
-                    const SizedBox(height: 7),
+                    ), const SizedBox(height: 7),
                     SizedBox(
                       height: 45,
                       child: TextField(
@@ -476,8 +492,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             )
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
+                    ), const SizedBox(height: 10),
                     Visibility(
                       visible: _emailDoubleCheckAlert,
                       child: SizedBox(
@@ -503,8 +518,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 5),
+                    ), const SizedBox(height: 5),
                     SizedBox(
                       height: 30,
                       child: RichText(
@@ -539,8 +553,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           ],
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
+                    ), const SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xffbf2142),
@@ -551,13 +564,20 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       onPressed: () {
-                        if (_nicknameCheckMessage != "사용 가능한 닉네임입니다." ||
-                            _passwordCheckMessage != "비밀번호가 확인되었습니다." ||
-                            _emailCheckMessage != '인증 번호가 전송되었습니다.' ||
-                            _emailDoubleCheckMessage != '인증되었습니다.') {
+                        if (_checkNickname() &&
+                            _checkPassword(passwordCheckingController.text.trim()) &&
+                            _checkEmail() &&
+                            _doubleCheckEmail()) {
+
+                          Navigator.of(context).push(
+                              _createRoute(
+                                nicknameController.text.trim(),
+                                emailController.text.trim(),
+                                passwordController.text.trim()
+                              )
+                          );
+                        } else {
                           null;
-                        }else {
-                          Navigator.of(context).push(_createRoute(_nickname));
                         }
                       },
                       child: const Text(
@@ -578,9 +598,13 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Route _createRoute(String nickname) {
+  Route _createRoute(String nickname, String email, String password) {
     return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => RegInfoWidget(nickname: _nickname),
+        pageBuilder: (context, animation, secondaryAnimation) => RegInfoWidget(
+          nickname: nickname,
+          email: "$email@dankook.ac.kr",
+          password: password
+        ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0);
           const end = Offset.zero;
