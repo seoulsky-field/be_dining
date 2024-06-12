@@ -90,10 +90,6 @@ class _RegInfoWidgetState extends State<RegInfoWidget> {
   }
 
   Future _createAccount() async {
-    print("==============ENTER THIS LOOP");
-    print(_email);
-    print(_password);
-
     await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: _email,
       password: _password,
