@@ -104,6 +104,13 @@ class _EatingAlonePageState extends State<EatingAlonePage2>
   Widget build(BuildContext context) {
     // height = MediaQuery.of(context).size.height - 300;
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(80.0), // 앱바 높이를 더 키움
+        child: AppBar(
+          centerTitle: true,
+          title: Image.asset('assets/images/logo.png', height: 60), // 로고 크기 확대 및 가운데 배치
+        ),
+      ),
       backgroundColor: Colors.white,
       body: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) => [

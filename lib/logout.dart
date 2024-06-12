@@ -29,6 +29,13 @@ class _MyPageState extends State<MyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(80.0), // 앱바 높이를 더 키움
+        child: AppBar(
+          centerTitle: true,
+          title: Image.asset('assets/images/logo.png', height: 60), // 로고 크기 확대 및 가운데 배치
+        ),
+      ),
       body: Center(
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -62,9 +69,9 @@ class _MyPageState extends State<MyPage> {
               //   },
               // ),
               Text(
-                'nickname: ${_user.email}',
+                '현재 접속 계정: ${_user.email}',
                 style: const TextStyle(
-                  fontSize: 22,
+                  fontSize: 18,
                   color: Colors.grey,
                   fontWeight: FontWeight.bold,
                 ),

@@ -6,8 +6,21 @@ import 'package:provider/provider.dart';
 import 'eatingAlonePage/eatingAloneScreen.dart';
 import 'eatingAlonePage/unifiedMapProvider.dart';
 
-import 'login.dart';
+// import 'login.dart';
 import 'logout.dart';
+
+import 'package:be_dining/screens/serach_screen.dart';
+import './screens/splash_screen.dart';
+import './screens/board_screen.dart';
+import './screens/auth_screen.dart';
+import './screens/notification_center_screen.dart';
+import './screens/post_detail_screen.dart';
+import './screens/edit_post_screen.dart';
+import './providers/posts.dart';
+import 'providers/Comments.dart';
+import './providers/auth.dart';
+import './providers/notifications.dart';
+
 
 class MainTab extends StatelessWidget {
   const MainTab({Key? key}) : super(key: key);
@@ -16,20 +29,73 @@ class MainTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<MapProvider>(create: (_) => MapProvider())
-      ],
-      child: Scaffold(
-        body: StreamBuilder<User?>(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return MainTabWidget();
-              } else {
-                return LoginPage();
-              }
-            }
+        ChangeNotifierProvider<MapProvider>(create: (_) => MapProvider()),
+        ChangeNotifierProvider.value(
+          value: Auth(),
         ),
-      )
+        ChangeNotifierProxyProvider<Auth, Posts>(
+          create: (_) => Posts('', '', []),
+          update: (ctx, auth, previousPosts) => Posts(
+            auth.token,
+            auth.userId,
+            previousPosts == null ? [] : previousPosts.items,
+          ),
+        ),
+        ChangeNotifierProxyProvider<Auth, Comments>(
+          create: (_) => Comments('', '', []),
+          update: (ctx, auth, previousComments) => Comments(
+            auth.token,
+            auth.userId,
+            previousComments == null ? [] : previousComments.items,
+          ),
+        ),
+        ChangeNotifierProxyProvider<Auth, Notifications>(
+          create: (_) => Notifications('', '', []),
+          update: (ctx, auth, previousNotifications) => Notifications(
+            auth.token,
+            auth.userId,
+            previousNotifications == null ? [] : previousNotifications.items,
+          ),
+        ),
+      ],
+      // child: Scaffold(
+      //   body: StreamBuilder<User?>(
+      //       stream: FirebaseAuth.instance.authStateChanges(),
+      //       builder: (context, snapshot) {
+      //         if (snapshot.hasData) {
+      //           return MainTabWidget();
+      //         } else {
+      //           return LoginPage();
+      //         }
+      //       }
+      //   ),
+      // )
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
+          title: 'Be Dining',
+          theme: ThemeData(
+            primaryColor: Colors.red, // 로그인 버튼 색
+            fontFamily: 'pretendard',
+          ),
+          home: auth.isAuth
+              ? MainTabWidget()
+              : FutureBuilder(
+            future: auth.tryAutoLogin(),
+            builder: (ctx, authResultSnapshot) =>
+            authResultSnapshot.connectionState ==
+                ConnectionState.waiting
+                ? SplashScreen()
+                : AuthScreen(), // Board -> Auth
+          ),
+          routes: {
+            BoardScreen.routeName: (ctx) => BoardScreen(),
+            PostDetailScreen.routeName: (ctx) => PostDetailScreen(),
+            EditPostScreen.routeName: (ctx) => EditPostScreen(),
+            NotiCenterScreen.routeName: (ctx) => NotiCenterScreen(),
+            SearchScreen.routeName: (ctx) => SearchScreen(),
+          },
+        ),
+      ),
     );
   }
 }
@@ -56,29 +122,27 @@ class MainTabWidgetState extends State<MainTabWidget> {
     final mapProvider = Provider.of<MapProvider>(context);
 
     final List<Widget> _widgetOptions = <Widget>[
-      Text(
-        '같이 먹자 구현',
-      ),
+      BoardScreen(),
       EatingAlonePage2(mapProvider: mapProvider),
       RecRoulette(),
       MyPage()
     ];
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60.0), // 앱바의 높이를 설정
-        child: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
-          flexibleSpace: Center(
-            child: Image.asset(
-              'assets/images/logo.png', // 로고 이미지 경로
-              height: 50, // 원하는 이미지 높이로 설정
-            ),
-          ),
-          elevation: 0,
-        ),
-      ),
+      // appBar: PreferredSize(
+      //   preferredSize: const Size.fromHeight(60.0), // 앱바의 높이를 설정
+      //   child: AppBar(
+      //     automaticallyImplyLeading: false,
+      //     backgroundColor: Colors.white,
+      //     flexibleSpace: Center(
+      //       child: Image.asset(
+      //         'assets/images/logo.png', // 로고 이미지 경로
+      //         height: 50, // 원하는 이미지 높이로 설정
+      //       ),
+      //     ),
+      //     elevation: 0,
+      //   ),
+      // ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),

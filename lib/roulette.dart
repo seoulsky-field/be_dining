@@ -71,6 +71,13 @@ class _RecRouletteState extends State<RecRoulette> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(80.0), // 앱바 높이를 더 키움
+          child: AppBar(
+            centerTitle: true,
+            title: Image.asset('assets/images/logo.png', height: 60), // 로고 크기 확대 및 가운데 배치
+          ),
+        ),
         body: Padding(
           padding: const EdgeInsets.all(30.0),
           child: SingleChildScrollView(
