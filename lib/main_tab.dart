@@ -109,7 +109,7 @@ class MainTabWidget extends StatefulWidget {
 
 class MainTabWidgetState extends State<MainTabWidget> {
   final _user = FirebaseAuth.instance.currentUser;
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   void _onItemTapped(int index) {
     setState(() {
