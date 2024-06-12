@@ -2,6 +2,10 @@ import 'package:be_dining/roulette.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+import 'eatingAlonePage/eatingAloneScreen.dart';
+import 'eatingAlonePage/unifiedMapProvider.dart';
+
 import 'login.dart';
 import 'logout.dart';
 
@@ -10,18 +14,22 @@ class MainTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return MainTabWidget();
-            } else {
-              return LoginPage();
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<MapProvider>(create: (_) => MapProvider())
+      ],
+      child: Scaffold(
+        body: StreamBuilder<User?>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return MainTabWidget();
+              } else {
+                return LoginPage();
+              }
             }
-          }
-      ),
-      // home: MainTabWidget(),
+        ),
+      )
     );
   }
 }
@@ -35,19 +43,7 @@ class MainTabWidget extends StatefulWidget {
 
 class MainTabWidgetState extends State<MainTabWidget> {
   final _user = FirebaseAuth.instance.currentUser;
-  // 탭을 이동할 때 쓸 변수!
   int _selectedIndex = 0;
-
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      '같이 먹자 구현',
-    ),
-    Text(
-      '혼밥 최고 구현',
-    ),
-    RecRoulette(),
-    MyPage()
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -57,6 +53,17 @@ class MainTabWidgetState extends State<MainTabWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final mapProvider = Provider.of<MapProvider>(context);
+
+    final List<Widget> _widgetOptions = <Widget>[
+      Text(
+        '같이 먹자 구현',
+      ),
+      EatingAlonePage2(mapProvider: mapProvider),
+      RecRoulette(),
+      MyPage()
+    ];
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0), // 앱바의 높이를 설정
@@ -99,7 +106,7 @@ class MainTabWidgetState extends State<MainTabWidget> {
 
         type: BottomNavigationBarType.fixed,
 
-        selectedItemColor: Color(0xffBF2142),
+        selectedItemColor: const Color(0xffBF2142),
         unselectedItemColor: Colors.grey,
       ),
 
