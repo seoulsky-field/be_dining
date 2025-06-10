@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../widgets/rmind_widgets.dart';
+import '../widgets/app_drawer.dart';
 import 'result_screen.dart';
 import 'upload_video_screen.dart';
 import 'notice_screen.dart';
@@ -16,7 +17,7 @@ class _RMindHomeScreenState extends State<RMindHomeScreen> {
   List<String> videos = [
     "1. 삼성 기출 면접",
     "2. 취약 질문 모음.zip",
-    "3",
+    "3. test",
   ];
 
   void _deleteVideo(int index) {
@@ -99,41 +100,53 @@ class _RMindHomeScreenState extends State<RMindHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: AppDrawer(),
       appBar: AppBar(
-        title: Text('rMIND', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.white,
+        elevation: 1,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.menu, color: Colors.black),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+        title: Image.asset('assets/images/logo.png', width: 80, height: 80),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search, color: Colors.black),
+            onPressed: () {
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         child: Column(
           children: [
-            Image.asset('assets/images/logo.png', width: 70, height: 70),
-            SizedBox(height: 6),
-            Text("rMIND",
-                style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red)),
-            SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => NoticePage()),
-                );
-              },
-              icon: Icon(Icons.campaign),
-              label: Text("공지사항 보기"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red[50],
-                foregroundColor: Colors.red[800],
-                padding: EdgeInsets.symmetric(vertical: 14, horizontal: 18),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            Container(
+              width: double.infinity,
+              margin: EdgeInsets.only(bottom: 24),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => NoticePage()),
+                  );
+                },
+                icon: Icon(Icons.campaign),
+                label: Text("공지사항 보기"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red[50],
+                  foregroundColor: Colors.red[800],
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: 24),
             Container(
               padding: EdgeInsets.all(18),
               decoration: BoxDecoration(

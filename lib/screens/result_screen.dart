@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import '../widgets/rmind_widgets.dart';
 
 class ResultPage extends StatefulWidget {
@@ -13,40 +12,9 @@ class ResultPage extends StatefulWidget {
 class _ResultPageState extends State<ResultPage> {
   int selectedIndex = 1;
 
-  List<FlSpot> heartRateData = [
-    FlSpot(0, 70),
-    FlSpot(1, 75),
-    FlSpot(2, 90),
-    FlSpot(3, 85),
-    FlSpot(4, 95),
-    FlSpot(5, 80),
-  ];
-
-  List<FlSpot> eyeData = [
-    FlSpot(0, 10),
-    FlSpot(1, 30),
-    FlSpot(2, 20),
-    FlSpot(3, 25),
-    FlSpot(4, 40),
-    FlSpot(5, 15),
-  ];
-
-  List<FlSpot> bodyData = [
-    FlSpot(0, 5),
-    FlSpot(1, 10),
-    FlSpot(2, 7),
-    FlSpot(3, 13),
-    FlSpot(4, 9),
-    FlSpot(5, 6),
-  ];
-
   Future<void> _handleRefresh() async {
     await Future.delayed(Duration(seconds: 1));
-    setState(() {
-      heartRateData = heartRateData.reversed.toList();
-      eyeData = eyeData.reversed.toList();
-      bodyData = bodyData.reversed.toList();
-    });
+    setState(() {});
   }
 
   @override
@@ -66,19 +34,29 @@ class _ResultPageState extends State<ResultPage> {
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Column(
             children: [
-              if (imageExists('${widget.videoPath}.png'))
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Image.asset(
-                    'assets/images/${widget.videoPath}.png',
-                    fit: BoxFit.contain,
-                  ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 140,
+                  height: 140,
+                  fit: BoxFit.contain,
                 ),
-              _buildResultCard("❤️ 심박수", Colors.redAccent, heartRateData),
+              ),
+              Text(
+                'rMind 분석 결과',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red[800],
+                ),
+              ),
+              SizedBox(height: 24),
+              _buildResultCard("❤️ 심박수", Colors.redAccent),
               SizedBox(height: 20),
-              _buildResultCard("👁 시선 흔들림", Colors.deepPurple, eyeData),
+              _buildResultCard("👁 시선 흔들림", Colors.deepPurple),
               SizedBox(height: 20),
-              _buildResultCard("💃 몸의 움직임", Colors.teal[700]!, bodyData),
+              _buildResultCard("💃 몸의 움직임", Colors.teal[700]!),
               SizedBox(height: 60),
             ],
           ),
@@ -93,7 +71,18 @@ class _ResultPageState extends State<ResultPage> {
     );
   }
 
-  Widget _buildResultCard(String title, Color color, List<FlSpot> data) {
+  Widget _buildResultCard(String title, Color color) {
+    String imagePath;
+    if (title.contains('심박수')) {
+      imagePath = 'assets/images/bpm_ex.png';
+    } else if (title.contains('시선 흔들림')) {
+      imagePath = 'assets/images/blink_ex.png';
+    } else if (title.contains('몸의 움직임')) {
+      imagePath = 'assets/images/motion_ex.png';
+    } else {
+      imagePath = 'assets/images/logo.png';
+    }
+
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -122,20 +111,13 @@ class _ResultPageState extends State<ResultPage> {
               border: Border.all(color: color.withOpacity(0.2)),
             ),
             padding: EdgeInsets.all(8),
-            child: LineChart(
-              LineChartData(
-                gridData: FlGridData(show: false),
-                titlesData: FlTitlesData(show: false),
-                borderData: FlBorderData(show: false),
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: data,
-                    isCurved: false,
-                    color: color,
-                    barWidth: 2.5,
-                    dotData: FlDotData(show: false),
-                  ),
-                ],
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                imagePath,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -146,8 +128,6 @@ class _ResultPageState extends State<ResultPage> {
 }
 
 bool imageExists(String imageName) {
-  // 실제 앱 빌드시 존재 여부는 따로 확인할 수 없으므로,
-  // 일단 에셋 폴더에 있다고 가정하고 무조건 true 반환하거나,
-  // 직접 존재 여부를 관리하는 List로 처리 가능
-  return true; // 임시 처리
+  // 추후 리스트 추가용
+  return true;
 }

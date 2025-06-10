@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:badges/badges.dart' as badges;
-
-import '../screens/notification_center_screen.dart';
 import '../providers/auth.dart';
-import '../providers/notifications.dart';
 
 class AppDrawer extends StatefulWidget {
   @override
@@ -13,16 +9,8 @@ class AppDrawer extends StatefulWidget {
 
 class _AppDrawerState extends State<AppDrawer> {
   @override
-  void didChangeDependencies() async {
-    final userId = Provider.of<Auth>(context).userId;
-    await Provider.of<Notifications>(context).fetchAndSetNotifications(userId!);
-    super.didChangeDependencies();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final userEmail = Provider.of<Auth>(context, listen: false).email;
-    var hasNotification = Provider.of<Notifications>(context).items.isNotEmpty;
 
     return Drawer(
       child: Column(
@@ -48,25 +36,13 @@ class _AppDrawerState extends State<AppDrawer> {
                   ),
                 )
               : Container(),
-          ListTile(
-            leading: hasNotification
-                ? Badge(
-                    child: Icon(Icons.notifications_none),
-                  )
-                : Icon(Icons.notifications_none),
-            title: Text('알림 센터'),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushNamed(NotiCenterScreen.routeName);
-            },
-          ),
+          Divider(),
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text('로그아웃'),
             onTap: () {
               Navigator.of(context).pop();
               Navigator.of(context).pushReplacementNamed('/');
-
               Provider.of<Auth>(context, listen: false).logout();
             },
           ),
